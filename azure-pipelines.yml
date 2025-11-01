@@ -1,0 +1,16 @@
+name: $(SourceBranchName)_$(Build.SourceVersion)
+
+trigger: none
+
+pool:
+  vmImage: 'ubuntu-24.04'
+
+steps:
+- script: |
+    aws rds start-db-instance --db-instance-identifier $(AWS_INSTANCES_LIST)
+  displayName: 'Starting up RDS Instances'
+  env:
+    AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
+    AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
+    AWS_INSTANCES_LIST: $(AWS_INSTANCES_LIST)
+    AWS_DEFAULT_REGION: $(AWS_REGION)
