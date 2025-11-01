@@ -1,4 +1,4 @@
-# AzurePipeline.RDS.StartUp
+# Automation pipeline: AzurePipeline.RDS.StartUp
 This repository includes an Azure pipeline designed to automate the process of starting and managing an RDS instance on AWS. It contains commands to launch an RDS instance, monitor its health, and efficiently manage its lifecycle. This configuration helps simplify infrastructure management, reduce manual work, and ensure that instances start and verify reliably within deployment workflows.
 
 ### 🛠️For the use the schema
@@ -11,8 +11,8 @@ This repository includes an Azure pipeline designed to automate the process of s
 ```
 AWS_ACCOUNT_ACCESS_KEY_ID
 AWS_ACCOUNT_SECRET_ACCESS_KEY
-AWS_EC2_INSTANCE_ID
-AWS_EC2_REGION
+AWS_INSTANCE_ID
+AWS_REGION
 ```
 
 ### ⚡Triggers in Azure Devops
