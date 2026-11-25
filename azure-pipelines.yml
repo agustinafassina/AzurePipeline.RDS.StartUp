@@ -3,14 +3,31 @@ name: $(SourceBranchName)_$(Build.SourceVersion)
 trigger: none
 
 pool:
-  vmImage: 'ubuntu-24.04'
+  vmImage: 'ubuntu-latest'
+
+variables:
+  AWS_REGION: 'us-east-1'                  # replace with the actual region
+  AWS_INSTANCE_ID: 'database-1,database-2' # comma-separated list of RDS DB instance identifiers
 
 steps:
-- script: |
-    aws rds start-db-instance --db-instance-identifier $(AWS_INSTANCES_LIST)
-  displayName: 'Starting up RDS Instances'
-  env:
-    AWS_ACCESS_KEY_ID: $(AWS_ACCESS_KEY_ID)
-    AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
-    AWS_INSTANCES_LIST: $(AWS_INSTANCE_ID)
-    AWS_DEFAULT_REGION: $(AWS_REGION)
+- task: AWSShellScript@1
+  displayName: 'Starting up RDS instances'
+  inputs:
+    awsCredentials: 'aws-dev-connection'
+    regionName: '$(AWS_REGION)'
+    scriptType: 'inline'
+    inlineScript: |
+      set -e
+      DB_IDS=$(echo "$AWS_INSTANCE_ID" | tr ',' ' ')
+
+      # start-db-instance accepts a single identifier, so loop over the comma-separated list
+      for DB_ID in $DB_IDS; do
+        echo "Starting RDS instance: $DB_ID"
+        aws rds start-db-instance --db-instance-identifier "$DB_ID"
+      done
+
+      # Wait until every instance is available
+      for DB_ID in $DB_IDS; do
+        echo "Waiting for RDS instance to be available: $DB_ID"
+        aws rds wait db-instance-available --db-instance-identifier "$DB_ID"
+      done
